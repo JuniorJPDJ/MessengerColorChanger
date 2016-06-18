@@ -1,7 +1,7 @@
 from messenger.MessengerAPI.Messenger import Messenger
 from PySide import QtGui
 from PySide.QtGui import *
-import sys, json, os
+import sys, json, os, asyncio
 
 
 # druga wersja zmieniacza kolorkow
@@ -20,15 +20,15 @@ class MessengerColorChangerLogin(QtGui.QWidget):
         login_label = QLabel("Login")
         self.login = QLineEdit()
 
-        password_label = QLabel("Password")
+        password_label = QLabel("Hasło")
         self.password = QLineEdit()
         self.password.setMaxLength(64)
         self.password.setEchoMode(QtGui.QLineEdit.Password)
 
-        login_button = QPushButton("Log in")
+        login_button = QPushButton("Zaloguj się")
         login_button.clicked.connect(self.login_to_facebook)
 
-        self.remember_checkbox = QCheckBox("Remember me (without password)")
+        self.remember_checkbox = QCheckBox("Zapamiętaj login (bez hasła)")
 
         grid.addWidget(login_label, 0, 0)
         grid.addWidget(self.login, 0, 1)
@@ -40,7 +40,7 @@ class MessengerColorChangerLogin(QtGui.QWidget):
         self.remember_load()
 
         self.setLayout(grid)
-        self.setGeometry(600, 300, 600, 250)
+        self.setGeometry(600, 300, 600, 250)  # polozeniex, polozeniey, x, y
         self.setWindowTitle("Zaloguj się")
         self.show()
 
@@ -86,7 +86,7 @@ class MessengerColorChanger(QtGui.QWidget):
             loginwindow.hide()
             self.setupUi(messenger)
         except:
-            QMessageBox.critical(self, "Error", "Incorrect login or password.",
+            QMessageBox.critical(self, "Błędzik", "Nieprawidłowy login lub hasło.",
                                  QMessageBox.Ok)
             print("Unexpected error:", sys.exc_info()[0])
 
@@ -106,29 +106,16 @@ class MessengerColorChanger(QtGui.QWidget):
         grid.addWidget(self.conversation_list, 1, 0, 1, 1)
 
         self.color_picker = QColorDialog()
-        # default facebook colors
-        self.color_picker.setCustomColor(0, 34047)
-        self.color_picker.setCustomColor(1, 4505287)
-        self.color_picker.setCustomColor(2, 16761600)
-        self.color_picker.setCustomColor(3, 16399436)
-        self.color_picker.setCustomColor(4, 14063291)
-        self.color_picker.setCustomColor(5, 6724044)
-        self.color_picker.setCustomColor(6, 1298195)
-        self.color_picker.setCustomColor(7, 16743977)
-        self.color_picker.setCustomColor(8, 15107461)
-        self.color_picker.setCustomColor(9, 7751423)
-        self.color_picker.setCustomColor(10, 2150133)
-        self.color_picker.setCustomColor(11, 6797416)
-        self.color_picker.setCustomColor(12, 13936780)
-        self.color_picker.setCustomColor(13, 16735393)
-        self.color_picker.setCustomColor(14, 10917319)
-        self.color_picker.setCustomColor(15, 16777215)  # white
+        # default facebook colors + white at the and
+        colors = [34047, 4505287, 16761600, 16399436, 14063291, 6724044, 1298195, 16743977, 15107461, 7751423, 2150133, 6797416, 13936780, 16735393, 10917319, 16777215]
+        for c in colors:
+            self.color_picker.setCustomColor(colors.index(c), c)
         # picker options
         self.color_picker.setOption(QColorDialog.NoButtons, True)
         self.color_picker.setOption(QColorDialog.DontUseNativeDialog, True)
         grid.addWidget(self.color_picker, 1, 1, 1, 1)
 
-        button = QPushButton("JUST DO IT!")
+        button = QPushButton("Do dzieła!")
         button.clicked.connect(self.change_color)
         grid.addWidget(button, 2, 0, 1, 0)
 
